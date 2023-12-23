@@ -29,13 +29,13 @@ function App() {
  * Button is functional only if the task is not empty.
  */
 function AddTaskButton() {
-  const { task } = useTask();
+  const { taskTitle } = useTask();
   const { addTask } = useChangeTask();
   return (
     <button
-      disabled={task === "" ? true : false}
+      disabled={taskTitle === "" ? true : false}
       onClick={addTask}
-      className={`${task === ""
+      className={`${taskTitle === ""
         ? "bg-slate-500 opacity-40"
         : "bg-slate-500 hover:bg-slate-600"
         } font-semibold text-lg

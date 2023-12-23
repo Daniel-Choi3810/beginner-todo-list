@@ -73,9 +73,7 @@ export function TaskProvider({ children }) {
   return (
     <TodoListDispatchContext.Provider value={dispatch}>
       <TodoContext.Provider value={{ todos }}>
-        <TaskTitleContext.Provider
-          value={{ task: taskTitle, setTask: setTaskTitle }}
-        >
+        <TaskTitleContext.Provider value={{ taskTitle, setTaskTitle }}>
           <UpdateTaskStatusContext.Provider value={{ updateTaskStatus }}>
             <ChangeTaskContext.Provider
               value={{ addTask, deleteTask, updateTaskTitle }}
