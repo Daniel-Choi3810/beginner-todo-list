@@ -13,11 +13,11 @@ function App() {
     <TaskProvider>
       <div className="flex flex-col items-center text-center h-screen">
         <Header />
+        <TodoDisplay />
         <div className='w-full flex justify-center items-cente mt-8'>
           <TodoInput />
           <AddTaskButton />
         </div>
-        <TodoDisplay />
       </div>
     </TaskProvider>
   );

@@ -77,6 +77,7 @@ function TodoTask({ todo }) {
       rounded-3xl shadow-md hover:shadow-2xl hover:bg-slate-700 relative"
     >
       <TodoCheckBox
+        style={"absolute left-4 checkbox checkbox-success h-4 w-4"}
         isComplete={isComplete}
         id={todo.id}
         setIsComplete={setIsComplete}
@@ -90,6 +91,8 @@ function TodoTask({ todo }) {
       </p>
       {isModalOpen && ( // Conditional rendering for the modal being open
         <TodoModal
+          isComplete={isComplete}
+          setIsComplete={setIsComplete}
           closeModal={closeModal}
           isEditEnabled={isEditEnabled}
           editTaskTitle={editTaskTitle}
@@ -111,7 +114,7 @@ function TodoTask({ todo }) {
  * @param {function} setIsComplete - The function to set the completion status of the todo
  * @returns
  */
-function TodoCheckBox({ isComplete, id, setIsComplete }) {
+function TodoCheckBox({ isComplete, id, setIsComplete, style }) {
   const { updateTaskStatus } = useUpdateTaskStatus(); // Custom hook to access the UpdateTaskStatus Context
 
   return (
@@ -125,7 +128,7 @@ function TodoCheckBox({ isComplete, id, setIsComplete }) {
         setIsComplete(!isComplete);
         updateTaskStatus(id, e.target.checked);
       }}
-      className="absolute left-4 checkbox checkbox-success h-4 w-4"
+      className={style}
     />
   );
 }
@@ -167,6 +170,8 @@ function TodoModal({
   handleUpdateClick,
   setIsEditEnabled,
   todoTask,
+  isComplete,
+  setIsComplete,
 }) {
   return (
     <div
@@ -177,24 +182,42 @@ function TodoModal({
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="bg-white p-4 rounded-lg h-full w-2/3 shadow-lg"
+        className="flex flex-col bg-slate-700 rounded-lg h-[95%] md:max-w-[800px] w-[100%] shadow-lg relative"
       >
-        {isEditEnabled ? ( // Conditional rendering for the task title being editable
-          <EditTaskTitleInput
-            editTaskTitle={editTaskTitle}
-            setEditTaskTitle={setEditTaskTitle}
-            handleUpdateClick={handleUpdateClick}
-          />
-        ) : (
-          <div
-            onClick={() => {
-              setIsEditEnabled(true);
-            }}
-          >
-            <h2 className="text-lg font-bold mb-2">{todoTask.title}</h2>
+        <div className="h-[50px] w-full border-b border-slate-500 flex justify-between items-center px-2">
+          <p>Lorem</p>
+          <button className="m-2" onClick={closeModal}>
+            X
+          </button>
+        </div>
+        <div className="grid sm:grid-cols-3 h-full ">
+          <div className="sm:col-span-2">
+            <div className="mt-4 flex justify-start items-center text-white">
+              <TodoCheckBox
+                style="checkbox checkbox-success mx-4 h-4 w-4"
+                isComplete={isComplete}
+                setIsComplete={setIsComplete}
+                id={todoTask.id}
+              />
+              {isEditEnabled ? ( // Conditional rendering for the task title being editable
+                <EditTaskTitleInput
+                  editTaskTitle={editTaskTitle}
+                  setEditTaskTitle={setEditTaskTitle}
+                  handleUpdateClick={handleUpdateClick}
+                />
+              ) : (
+                <div
+                  onClick={() => {
+                    setIsEditEnabled(true);
+                  }}
+                >
+                  <h2 className="text-lg font-bold">{todoTask.title}</h2>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-        <button onClick={closeModal}>Exit</button>
+          <div className="bg-gray-600 h-full w-full pt-4">Due date</div>
+        </div>
       </div>
     </div>
   );
