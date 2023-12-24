@@ -1,4 +1,3 @@
-import './App.css';
 import Header from './components/Header';
 import TodoDisplay from './components/todoContent/TodoDisplay';
 import TodoInput from './components/TodoInput';
@@ -8,10 +7,11 @@ import { TaskProvider, useChangeTask, useTask } from './context/TaskContext';
  * Renders the main application component.
  * Wrapped by the TaskProvider component to provide state values to children
  */
+
 function App() {
   return (
     <TaskProvider>
-      <div className="App">
+      <div className="flex flex-col items-center text-center h-screen">
         <Header />
         <div className='w-full flex justify-center items-cente mt-8'>
           <TodoInput />
