@@ -117,12 +117,39 @@ const getInitialState = () => {
   return localData ? JSON.parse(localData) : [];
 };
 
+const getCurrDate = () => {
+  const dateObj = new Date();
+  const month = dateObj.getMonth() + 1; // Months are 0-indexed
+  const day = dateObj.getDate(); // Get the day of the month
+  let hours = dateObj.getHours(); // Get the hours
+  const minutes = dateObj.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  const formattedMonth = month < 10 ? `0${month}` : month;
+  const formattedDay = day < 10 ? `0${day}` : day;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  const currDate = `${formattedMonth}/${formattedDay} · ${hours}:${formattedMinutes} ${ampm}`;
+  return currDate;
+};
+
 // Reducer function to handle different actions and update the todos state
 function reducer(todos, action) {
   switch (action.type) {
     // action to add task to todos
     case ACTIONS.ADD: {
-      return [...todos, { id: uuidv4(), title: action.task, status: false }];
+      return [
+        ...todos,
+        {
+          id: uuidv4(),
+          title: action.task,
+          status: false,
+          currDate: getCurrDate(),
+        },
+      ];
     }
     // action to delete a task from todos based off of id
     case ACTIONS.DELETE: {
