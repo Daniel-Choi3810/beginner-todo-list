@@ -35,7 +35,7 @@ export function DeleteTaskButton({ id }) {
         e.nativeEvent.stopImmediatePropagation(); // Prevents the delete button from being clickable if the modal is open
         deleteTask(id);
       }}
-      className="absolute right-3 rounded-full p-2 text-xs"
+      className="absolute right-3 rounded-full p-2 text-sm"
     >
       ❌
     </button>

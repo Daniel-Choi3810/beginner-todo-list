@@ -35,7 +35,7 @@ export default function TodoModal({
           <div className="sm:col-span-2">
             <div className="mt-4 flex items-start w-full text-white">
               <TodoCheckBox
-                style="checkbox checkbox-success mt-4 mx-4 h-4 w-4"
+                style="checkbox checkbox-success mt-4 mx-4 h-5 w-5 rounded-full"
                 isComplete={isComplete}
                 setIsComplete={setIsComplete}
                 id={todoTask.id}
@@ -110,7 +110,7 @@ function EditTaskInput({
   handleUpdateClick,
 }) {
   return (
-    <div className="relative flex flex-col items-start w-full">
+    <div className="flex flex-col items-start w-full">
       <div className="flex flex-col w-[90%] p-2 border rounded-lg">
         <input
           value={editTaskTitle}

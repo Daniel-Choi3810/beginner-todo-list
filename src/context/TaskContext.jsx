@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from "uuid";
 
 // These are contexts for managing different aspects of the todo application
 const TodoContext = createContext(null); // Context created for todos list.
-const TaskTitleContext = createContext(null); // Context created for the created task's state
+const TaskTitleContext = createContext(null); // Context created for the created task title's
+const TaskDescriptionContext = createContext(null); // Context created for the created task description's state
 const ChangeTaskContext = createContext(null); // Context created for the add, delete, and update tasks
 const UpdateTaskStatusContext = createContext(null); // Context created for the update task completion status
 const TodoListDispatchContext = createContext(null); // Context created for the dispatch method used with useReducer.
@@ -30,6 +31,8 @@ const ACTIONS = {
 export function TaskProvider({ children }) {
   // useState hook for the newly created task's title
   const [taskTitle, setTaskTitle] = useState("");
+  // useState hook for the newly created task's description
+  const [taskDescription, setTaskDescription] = useState("");
   // useReducer hook that manages the state of the todos.  The initial state is from localStorage
   const [todos, dispatch] = useReducer(reducer, getInitialState());
 
@@ -41,8 +44,13 @@ export function TaskProvider({ children }) {
 
   // Function to add a new task to the todos state
   function addTask() {
-    dispatch({ type: ACTIONS.ADD, taskTitle: taskTitle });
-    setTaskTitle(""); // Clears the task state after it is created
+    dispatch({
+      type: ACTIONS.ADD,
+      taskTitle: taskTitle,
+      description: taskDescription,
+    });
+    setTaskTitle(""); // Clears the task title state after it is created
+    setTaskDescription(""); // Clears the task description state after it is created
   }
 
   // Function to delete a task based off the id
@@ -83,18 +91,22 @@ export function TaskProvider({ children }) {
     <TodoListDispatchContext.Provider value={dispatch}>
       <TodoContext.Provider value={{ todos }}>
         <TaskTitleContext.Provider value={{ taskTitle, setTaskTitle }}>
-          <UpdateTaskStatusContext.Provider value={{ updateTaskStatus }}>
-            <ChangeTaskContext.Provider
-              value={{
-                addTask,
-                deleteTask,
-                updateTaskTitle,
-                updateTaskDescription,
-              }}
-            >
-              {children}
-            </ChangeTaskContext.Provider>
-          </UpdateTaskStatusContext.Provider>
+          <TaskDescriptionContext.Provider
+            value={{ taskDescription, setTaskDescription }}
+          >
+            <UpdateTaskStatusContext.Provider value={{ updateTaskStatus }}>
+              <ChangeTaskContext.Provider
+                value={{
+                  addTask,
+                  deleteTask,
+                  updateTaskTitle,
+                  updateTaskDescription,
+                }}
+              >
+                {children}
+              </ChangeTaskContext.Provider>
+            </UpdateTaskStatusContext.Provider>
+          </TaskDescriptionContext.Provider>
         </TaskTitleContext.Provider>
       </TodoContext.Provider>
     </TodoListDispatchContext.Provider>
@@ -111,8 +123,13 @@ export function useDispatch() {
 }
 
 // Custom hook to return the TaskTitleContext
-export function useTask() {
+export function useTaskTitle() {
   return useContext(TaskTitleContext);
+}
+
+// Custom hook to return the TaskTitleDescription
+export function useTaskDescription() {
+  return useContext(TaskDescriptionContext);
 }
 
 // Custom hook to return the ChangeTaskContext
@@ -162,7 +179,7 @@ function reducer(todos, action) {
           taskTitle: action.taskTitle,
           status: false,
           currDate: getCurrDate(),
-          description: "",
+          description: action.description,
         },
       ];
     }

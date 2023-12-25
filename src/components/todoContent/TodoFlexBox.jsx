@@ -80,11 +80,11 @@ function TodoTask({ todo }) {
   return (
     <div
       onClick={openModal}
-      className="flex flex-col justify-center items-center m-2 w-2/3 h-12 bg-slate-600 px-8
-      rounded-3xl shadow-md hover:shadow-2xl hover:bg-slate-700 relative"
+      className="flex flex-col justify-center items-center m-2 w-2/3 py-2 bg-slate-600 px-8
+      rounded-full shadow-md hover:shadow-2xl hover:bg-slate-700 relative"
     >
       <TodoCheckBox
-        style={"absolute left-4 checkbox checkbox-success h-4 w-4"}
+        style={"absolute left-4 rounded-full checkbox checkbox-success h-5 w-5"}
         isComplete={isComplete}
         id={todo.id}
         setIsComplete={setIsComplete}
