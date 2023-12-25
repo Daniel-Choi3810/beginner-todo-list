@@ -20,6 +20,7 @@ const ACTIONS = {
   DELETE: "deleteTask",
   UPDATE_TITLE: "updateTaskTitle",
   UPDATE_STATUS: "updateTaskStatus",
+  UPDATE_DESCRIPTION: "updateTaskDescription",
 };
 
 /**
@@ -40,7 +41,7 @@ export function TaskProvider({ children }) {
 
   // Function to add a new task to the todos state
   function addTask() {
-    dispatch({ type: ACTIONS.ADD, task: taskTitle });
+    dispatch({ type: ACTIONS.ADD, taskTitle: taskTitle });
     setTaskTitle(""); // Clears the task state after it is created
   }
 
@@ -53,11 +54,19 @@ export function TaskProvider({ children }) {
   }
 
   // Function to update the task title based off of the id
-  function updateTaskTitle(id, todoTask) {
+  function updateTaskTitle(id, todoTaskTitle) {
     dispatch({
       type: ACTIONS.UPDATE_TITLE,
       id: id,
-      todoTask: todoTask,
+      todoTaskTitle: todoTaskTitle,
+    });
+  }
+
+  function updateTaskDescription(id, todoTaskDescription) {
+    dispatch({
+      type: ACTIONS.UPDATE_DESCRIPTION,
+      id: id,
+      todoTaskDescription: todoTaskDescription,
     });
   }
 
@@ -76,7 +85,12 @@ export function TaskProvider({ children }) {
         <TaskTitleContext.Provider value={{ taskTitle, setTaskTitle }}>
           <UpdateTaskStatusContext.Provider value={{ updateTaskStatus }}>
             <ChangeTaskContext.Provider
-              value={{ addTask, deleteTask, updateTaskTitle }}
+              value={{
+                addTask,
+                deleteTask,
+                updateTaskTitle,
+                updateTaskDescription,
+              }}
             >
               {children}
             </ChangeTaskContext.Provider>
@@ -145,9 +159,10 @@ function reducer(todos, action) {
         ...todos,
         {
           id: uuidv4(),
-          title: action.task,
+          taskTitle: action.taskTitle,
           status: false,
           currDate: getCurrDate(),
+          description: "",
         },
       ];
     }
@@ -159,7 +174,7 @@ function reducer(todos, action) {
     case ACTIONS.UPDATE_TITLE: {
       return todos.map((todo) => {
         if (action.id === todo.id) {
-          return { ...todo, title: action.todoTask };
+          return { ...todo, taskTitle: action.todoTaskTitle };
         } else {
           return todo;
         }
@@ -170,6 +185,15 @@ function reducer(todos, action) {
       return todos.map((todo) => {
         if (action.id === todo.id) {
           return { ...todo, status: action.taskStatus };
+        } else {
+          return todo;
+        }
+      });
+    }
+    case ACTIONS.UPDATE_DESCRIPTION: {
+      return todos.map((todo) => {
+        if (action.id === todo.id) {
+          return { ...todo, description: action.todoTaskDescription };
         } else {
           return todo;
         }

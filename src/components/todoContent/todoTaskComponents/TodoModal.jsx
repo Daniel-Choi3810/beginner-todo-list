@@ -1,11 +1,13 @@
 import { UpdateTaskButton } from "./TaskButtons";
 import TodoCheckBox from "./TodoCheckBox";
-
+import { AiOutlineMenu } from "react-icons/ai";
 export default function TodoModal({
   closeModal,
   isEditEnabled,
   editTaskTitle,
   setEditTaskTitle,
+  editTaskDescription,
+  setEditTaskDescription,
   handleUpdateClick,
   setIsEditEnabled,
   todoTask,
@@ -15,13 +17,13 @@ export default function TodoModal({
   return (
     <div
       onClick={closeModal}
-      className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-10"
+      className="fixed top-0 left-0 w-full h-full bg-black flex justify-center items-center z-10"
     >
       <div
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="flex flex-col bg-slate-700 rounded-lg h-[95%] md:max-w-[800px] w-[100%] shadow-lg relative"
+        className="flex flex-col bg-slate-700 rounded-lg h-[95%] md:max-w-[850px] w-[95%] shadow-lg relative"
       >
         <div className="h-[50px] w-full border-b border-slate-500 flex justify-between items-center px-2">
           <p className="ml-2 italic">Added on {todoTask.currDate}</p>
@@ -31,31 +33,59 @@ export default function TodoModal({
         </div>
         <div className="grid sm:grid-cols-3 h-full ">
           <div className="sm:col-span-2">
-            <div className="mt-4 flex justify-start items-center text-white">
+            <div className="mt-4 flex items-start w-full text-white">
               <TodoCheckBox
-                style="checkbox checkbox-success mx-4 h-4 w-4"
+                style="checkbox checkbox-success mt-4 mx-4 h-4 w-4"
                 isComplete={isComplete}
                 setIsComplete={setIsComplete}
                 id={todoTask.id}
               />
               {isEditEnabled ? ( // Conditional rendering for the task title being editable
-                <EditTaskTitleInput
+                <EditTaskInput
+                  initialTask={todoTask.taskTitle}
+                  initialDescription={todoTask.description}
+                  disableEdit={() => {
+                    setIsEditEnabled(false);
+                  }}
                   editTaskTitle={editTaskTitle}
                   setEditTaskTitle={setEditTaskTitle}
+                  editTaskDescription={editTaskDescription}
+                  setEditTaskDescription={setEditTaskDescription}
                   handleUpdateClick={handleUpdateClick}
                 />
               ) : (
                 <div
+                  className="w-full flex flex-col p-2 items-start justify-start"
                   onClick={() => {
                     setIsEditEnabled(true);
                   }}
                 >
-                  <h2 className="text-lg font-bold">{todoTask.title}</h2>
+                  <h2 className="text-2xl font-bold ">{todoTask.taskTitle}</h2>
+                  <div className="flex items-center text-gray-400">
+                    {todoTask.description === "" && <AiOutlineMenu />}
+                    <h3
+                      className={`${todoTask.description === "" ? "ml-2" : ""}`}
+                    >
+                      {todoTask.description === ""
+                        ? "Description"
+                        : todoTask.description}
+                    </h3>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-          <div className="bg-gray-600 h-full w-full pt-4">Due date</div>
+          <div className="bg-gray-600 flex flex-col items-center w-full pt-4 px-3 rounded-br-lg">
+            <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
+              <button className="py-2">Due date</button>
+            </div>
+            <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
+              <button className="py-2">Priority</button>
+            </div>
+            <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
+              <button className="py-2">Labels</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -69,24 +99,52 @@ export default function TodoModal({
  * @param {function} handleUpdateClick - The function to handle the update button click
  * @returns
  */
-function EditTaskTitleInput({
+function EditTaskInput({
+  initialTask,
+  initialDescription,
+  disableEdit,
   editTaskTitle,
   setEditTaskTitle,
+  editTaskDescription,
+  setEditTaskDescription,
   handleUpdateClick,
 }) {
   return (
-    <div className="relative flex justify-center items-center">
-      <input
-        value={editTaskTitle}
-        onChange={(e) => {
-          setEditTaskTitle(e.target.value);
-        }}
-        className="bg-transparent border p-1 rounded-lg"
-      />
-      <UpdateTaskButton
-        handleUpdateClick={handleUpdateClick}
-        editTask={editTaskTitle}
-      />
+    <div className="relative flex flex-col items-start w-full">
+      <div className="flex flex-col w-[90%] p-2 border rounded-lg">
+        <input
+          value={editTaskTitle}
+          onChange={(e) => {
+            setEditTaskTitle(e.target.value);
+          }}
+          className="bg-transparent text-2xl font-bold border-none rounded-lg focus:outline-none"
+        />
+        <div
+          contentEditable
+          suppressContentEditableWarning
+          onBlur={(e) => {
+            setEditTaskDescription(e.target.textContent);
+          }}
+          className="bg-transparent border-b w-3/5 focus:outline-none text-left"
+        >
+          {editTaskDescription}
+        </div>
+      </div>
+      <div className="flex justify-end w-[90%]">
+        <UpdateTaskButton
+          handleUpdateClick={handleUpdateClick}
+          editTask={editTaskTitle}
+        />
+        <button
+          onClick={() => {
+            disableEdit();
+            setEditTaskTitle(initialTask);
+            setEditTaskDescription(initialDescription);
+          }}
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

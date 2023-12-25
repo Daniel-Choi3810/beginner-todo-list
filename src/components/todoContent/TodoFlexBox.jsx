@@ -35,16 +35,21 @@ export default function TodoFlexBox() {
 function TodoTask({ todo }) {
   const [todoTask, setTodoTask] = useState(todo); // useState hook for the todo Object prop
   const [isComplete, setIsComplete] = useState(todo.status); // useState hook for the todo Object prop's status
-  const { updateTaskTitle } = useChangeTask(); // Custom hook to access the ChangeTask Context
-
   const [isModalOpen, setIsModalOpen] = useState(false); // useState hook for determining if the task's modal is open
   const [isEditEnabled, setIsEditEnabled] = useState(false); // useState hook for determining if the task's title is editable
-  const [editTaskTitle, setEditTaskTitle] = useState(todo.title); // useState hook for the task's title
+
+  const { updateTaskTitle, updateTaskDescription } = useChangeTask(); // Custom hook to access the ChangeTask Context
+
+  const [editTaskTitle, setEditTaskTitle] = useState(todo.taskTitle); // useState hook for the task's title
+  const [editTaskDescription, setEditTaskDescription] = useState(
+    todo.description
+  );
 
   // Function for opening the todo's modal
   function openModal() {
     setIsModalOpen(true);
-    setEditTaskTitle(todoTask.title);
+    setEditTaskTitle(todoTask.taskTitle);
+    setEditTaskDescription(todoTask.description);
     setIsEditEnabled(false);
   }
 
@@ -52,14 +57,21 @@ function TodoTask({ todo }) {
   function closeModal(e) {
     e.stopPropagation();
     setIsModalOpen(false);
-    setEditTaskTitle(todoTask.title);
+    setEditTaskTitle(todoTask.taskTitle);
+    setEditTaskDescription(todoTask.description);
   }
 
   // Function for handling the update button click in the modal
   function handleUpdateClick(e) {
     e.stopPropagation();
-    setTodoTask({ ...todo, title: editTaskTitle });
+    setTodoTask({
+      ...todo,
+      taskTitle: editTaskTitle,
+      description: editTaskDescription,
+    });
+    // console.log(editTaskTitle);
     updateTaskTitle(todo.id, editTaskTitle);
+    updateTaskDescription(todo.id, editTaskDescription);
     if (isEditEnabled) {
       setIsEditEnabled(false);
     }
@@ -68,7 +80,7 @@ function TodoTask({ todo }) {
   return (
     <div
       onClick={openModal}
-      className="flex flex-col justify-center items-center m-2 w-4/5 h-12 bg-slate-600 px-8
+      className="flex flex-col justify-center items-center m-2 w-2/3 h-12 bg-slate-600 px-8
       rounded-3xl shadow-md hover:shadow-2xl hover:bg-slate-700 relative"
     >
       <TodoCheckBox
@@ -79,10 +91,21 @@ function TodoTask({ todo }) {
       />
       <p
         className={`${
-          isComplete ? "text-gray-400 line-through" : "text-white"
+          isComplete
+            ? "text-gray-400 font-bold line-through"
+            : "font-bold text-white"
         }`}
       >
-        {todoTask.title}
+        {todoTask.taskTitle}
+      </p>
+      <p
+        className={`${
+          isComplete
+            ? "text-gray-400 line-through italic"
+            : "text-gray-400 italic"
+        }`}
+      >
+        {todoTask.description}
       </p>
       {isModalOpen && ( // Conditional rendering for the modal being open
         <TodoModal
@@ -92,6 +115,8 @@ function TodoTask({ todo }) {
           isEditEnabled={isEditEnabled}
           editTaskTitle={editTaskTitle}
           setEditTaskTitle={setEditTaskTitle}
+          editTaskDescription={editTaskDescription}
+          setEditTaskDescription={setEditTaskDescription}
           handleUpdateClick={handleUpdateClick}
           setIsEditEnabled={setIsEditEnabled}
           todoTask={todoTask}
