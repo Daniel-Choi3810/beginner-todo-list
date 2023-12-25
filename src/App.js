@@ -1,7 +1,8 @@
 import Header from './components/Header';
-import TodoDisplay from './components/todoContent/TodoDisplay';
-import CreateTaskInput from './components/TodoInput';
+import TodoDisplay from './components/TodoDisplay';
+import CreateTaskInput from './components/CreateTaskInput';
 import { TaskProvider, useChangeTask, useTaskTitle } from './context/TaskContext';
+import TaskCalendarPicker from './components/todoTaskComponents/TaskCalendarPicker';
 
 /**
  * Renders the main application component.

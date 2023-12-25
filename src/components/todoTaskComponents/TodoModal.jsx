@@ -1,6 +1,9 @@
 import { UpdateTaskButton } from "./TaskButtons";
 import TodoCheckBox from "./TodoCheckBox";
 import { AiOutlineMenu } from "react-icons/ai";
+import { DayPicker } from "react-day-picker";
+import { parse } from "date-fns";
+
 export default function TodoModal({
   closeModal,
   isEditEnabled,
@@ -8,6 +11,8 @@ export default function TodoModal({
   setEditTaskTitle,
   editTaskDescription,
   setEditTaskDescription,
+  editTaskDueDate,
+  setEditTaskDueDate,
   handleUpdateClick,
   setIsEditEnabled,
   todoTask,
@@ -41,18 +46,23 @@ export default function TodoModal({
                 id={todoTask.id}
               />
               {isEditEnabled ? ( // Conditional rendering for the task title being editable
-                <EditTaskInput
-                  initialTask={todoTask.taskTitle}
-                  initialDescription={todoTask.description}
-                  disableEdit={() => {
-                    setIsEditEnabled(false);
-                  }}
-                  editTaskTitle={editTaskTitle}
-                  setEditTaskTitle={setEditTaskTitle}
-                  editTaskDescription={editTaskDescription}
-                  setEditTaskDescription={setEditTaskDescription}
-                  handleUpdateClick={handleUpdateClick}
-                />
+                <div>
+                  <EditTaskInput
+                    initialTaskTitle={todoTask.taskTitle}
+                    initialDescription={todoTask.description}
+                    initialDueDate={parse(todoTask.dueDate, "PP", new Date())}
+                    disableEdit={() => {
+                      setIsEditEnabled(false);
+                    }}
+                    editTaskTitle={editTaskTitle}
+                    setEditTaskTitle={setEditTaskTitle}
+                    editTaskDescription={editTaskDescription}
+                    setEditTaskDescription={setEditTaskDescription}
+                    editTaskDueDate={editTaskDueDate}
+                    setEditTaskDueDate={setEditTaskDueDate}
+                    handleUpdateClick={handleUpdateClick}
+                  />
+                </div>
               ) : (
                 <div
                   className="w-full flex flex-col p-2 items-start justify-start"
@@ -61,6 +71,8 @@ export default function TodoModal({
                   }}
                 >
                   <h2 className="text-2xl font-bold ">{todoTask.taskTitle}</h2>
+                  <h2 className="text-2xl font-bold ">{todoTask.dueDate}</h2>
+
                   <div className="flex items-center text-gray-400">
                     {todoTask.description === "" && <AiOutlineMenu />}
                     <h3
@@ -77,7 +89,7 @@ export default function TodoModal({
           </div>
           <div className="bg-gray-600 flex flex-col items-center w-full pt-4 px-3 rounded-br-lg">
             <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
-              <button className="py-2">Due date</button>
+              <button className="py-2">Due date: {todoTask.dueDate}</button>
             </div>
             <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
               <button className="py-2">Priority</button>
@@ -100,13 +112,16 @@ export default function TodoModal({
  * @returns
  */
 function EditTaskInput({
-  initialTask,
+  initialTaskTitle,
   initialDescription,
+  initialDueDate,
   disableEdit,
   editTaskTitle,
   setEditTaskTitle,
   editTaskDescription,
   setEditTaskDescription,
+  editTaskDueDate,
+  setEditTaskDueDate,
   handleUpdateClick,
 }) {
   return (
@@ -138,13 +153,20 @@ function EditTaskInput({
         <button
           onClick={() => {
             disableEdit();
-            setEditTaskTitle(initialTask);
+            setEditTaskTitle(initialTaskTitle);
             setEditTaskDescription(initialDescription);
+            setEditTaskDueDate(initialDueDate);
           }}
         >
           Cancel
         </button>
       </div>
+      <DayPicker
+        mode="single"
+        selected={editTaskDueDate}
+        onSelect={setEditTaskDueDate}
+        // footer={footer}
+      />
     </div>
   );
 }

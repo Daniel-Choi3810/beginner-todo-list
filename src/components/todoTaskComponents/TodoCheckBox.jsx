@@ -1,4 +1,4 @@
-import { useUpdateTaskStatus } from "../../../context/TaskContext";
+import { useChangeTask } from "../../context/TaskContext";
 
 /**
  * Checkbox component to determine the completion status of a todo
@@ -8,7 +8,7 @@ import { useUpdateTaskStatus } from "../../../context/TaskContext";
  * @returns
  */
 export default function TodoCheckBox({ isComplete, id, setIsComplete, style }) {
-  const { updateTaskStatus } = useUpdateTaskStatus(); // Custom hook to access the UpdateTaskStatus Context
+  const { updateTaskStatus } = useChangeTask(); // Custom hook to access the UpdateTaskStatus Context
 
   return (
     <input

@@ -6,13 +6,12 @@ import React, {
   useState,
 } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { format } from "date-fns";
 
 // These are contexts for managing different aspects of the todo application
 const TodoContext = createContext(null); // Context created for todos list.
-const TaskTitleContext = createContext(null); // Context created for the created task title's
-const TaskDescriptionContext = createContext(null); // Context created for the created task description's state
+const TaskContext = createContext(null); // Context created for the created task state
 const ChangeTaskContext = createContext(null); // Context created for the add, delete, and update tasks
-const UpdateTaskStatusContext = createContext(null); // Context created for the update task completion status
 const TodoListDispatchContext = createContext(null); // Context created for the dispatch method used with useReducer.
 
 // Action types for useReducer to handle different actions
@@ -22,6 +21,7 @@ const ACTIONS = {
   UPDATE_TITLE: "updateTaskTitle",
   UPDATE_STATUS: "updateTaskStatus",
   UPDATE_DESCRIPTION: "updateTaskDescription",
+  UPDATE_DUE_DATE: "updateTaskDueDate",
 };
 
 /**
@@ -33,6 +33,8 @@ export function TaskProvider({ children }) {
   const [taskTitle, setTaskTitle] = useState("");
   // useState hook for the newly created task's description
   const [taskDescription, setTaskDescription] = useState("");
+  // useState hook for the newly created task's dued date
+  const [taskDueDate, setTaskDueDate] = useState("");
   // useReducer hook that manages the state of the todos.  The initial state is from localStorage
   const [todos, dispatch] = useReducer(reducer, getInitialState());
 
@@ -48,9 +50,11 @@ export function TaskProvider({ children }) {
       type: ACTIONS.ADD,
       taskTitle: taskTitle,
       description: taskDescription,
+      dueDate: taskDueDate === "" ? "" : format(taskDueDate, "PP"), // date object in state must be formatted as string
     });
     setTaskTitle(""); // Clears the task title state after it is created
     setTaskDescription(""); // Clears the task description state after it is created
+    setTaskDueDate(""); // Clears the task due date state after it is created
   }
 
   // Function to delete a task based off the id
@@ -78,6 +82,15 @@ export function TaskProvider({ children }) {
     });
   }
 
+  function updateTaskDueDate(id, todoTaskDueDate) {
+    dispatch({
+      type: ACTIONS.UPDATE_DUE_DATE,
+      id: id,
+      todoTaskDueDate:
+        todoTaskDueDate === undefined ? "" : format(todoTaskDueDate, "PP"), // date object in state must be formatted as string
+    });
+  }
+
   // Function to update the task status based off of the id
   function updateTaskStatus(id, taskStatus) {
     dispatch({
@@ -90,24 +103,29 @@ export function TaskProvider({ children }) {
   return (
     <TodoListDispatchContext.Provider value={dispatch}>
       <TodoContext.Provider value={{ todos }}>
-        <TaskTitleContext.Provider value={{ taskTitle, setTaskTitle }}>
-          <TaskDescriptionContext.Provider
-            value={{ taskDescription, setTaskDescription }}
+        <TaskContext.Provider
+          value={{
+            taskTitle,
+            setTaskTitle,
+            taskDescription,
+            setTaskDescription,
+            taskDueDate,
+            setTaskDueDate,
+          }}
+        >
+          <ChangeTaskContext.Provider
+            value={{
+              addTask,
+              deleteTask,
+              updateTaskTitle,
+              updateTaskDescription,
+              updateTaskStatus,
+              updateTaskDueDate,
+            }}
           >
-            <UpdateTaskStatusContext.Provider value={{ updateTaskStatus }}>
-              <ChangeTaskContext.Provider
-                value={{
-                  addTask,
-                  deleteTask,
-                  updateTaskTitle,
-                  updateTaskDescription,
-                }}
-              >
-                {children}
-              </ChangeTaskContext.Provider>
-            </UpdateTaskStatusContext.Provider>
-          </TaskDescriptionContext.Provider>
-        </TaskTitleContext.Provider>
+            {children}
+          </ChangeTaskContext.Provider>
+        </TaskContext.Provider>
       </TodoContext.Provider>
     </TodoListDispatchContext.Provider>
   );
@@ -123,23 +141,13 @@ export function useDispatch() {
 }
 
 // Custom hook to return the TaskTitleContext
-export function useTaskTitle() {
-  return useContext(TaskTitleContext);
-}
-
-// Custom hook to return the TaskTitleDescription
-export function useTaskDescription() {
-  return useContext(TaskDescriptionContext);
+export function useTask() {
+  return useContext(TaskContext);
 }
 
 // Custom hook to return the ChangeTaskContext
 export function useChangeTask() {
   return useContext(ChangeTaskContext);
-}
-
-// Custom hook to return the UpdateTaskStatusContext
-export function useUpdateTaskStatus() {
-  return useContext(UpdateTaskStatusContext);
 }
 
 // Variable to get the initial todos state from localStorage
@@ -180,6 +188,7 @@ function reducer(todos, action) {
           status: false,
           currDate: getCurrDate(),
           description: action.description,
+          dueDate: action.dueDate,
         },
       ];
     }
@@ -211,6 +220,15 @@ function reducer(todos, action) {
       return todos.map((todo) => {
         if (action.id === todo.id) {
           return { ...todo, description: action.todoTaskDescription };
+        } else {
+          return todo;
+        }
+      });
+    }
+    case ACTIONS.UPDATE_DUE_DATE: {
+      return todos.map((todo) => {
+        if (action.id === todo.id) {
+          return { ...todo, dueDate: action.todoTaskDueDate };
         } else {
           return todo;
         }

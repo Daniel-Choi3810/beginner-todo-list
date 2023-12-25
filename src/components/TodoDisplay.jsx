@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import TodoFlexBox from "./TodoFlexBox";
-import { TodoListContext } from "../../context/TaskContext";
+import { TodoListContext } from "../context/TaskContext";
 
 /**
  *

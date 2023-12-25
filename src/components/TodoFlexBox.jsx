@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useChangeTask, useTodos } from "../../context/TaskContext";
+import { useChangeTask, useTodos } from "../context/TaskContext";
 import { DeleteTaskButton } from "./todoTaskComponents/TaskButtons";
 import TodoModal from "./todoTaskComponents/TodoModal";
 import TodoCheckBox from "./todoTaskComponents/TodoCheckBox";
+import { format, parse } from "date-fns";
 
 /**
  * Renders a flexbox container for displaying todo tasks.
@@ -38,18 +39,21 @@ function TodoTask({ todo }) {
   const [isModalOpen, setIsModalOpen] = useState(false); // useState hook for determining if the task's modal is open
   const [isEditEnabled, setIsEditEnabled] = useState(false); // useState hook for determining if the task's title is editable
 
-  const { updateTaskTitle, updateTaskDescription } = useChangeTask(); // Custom hook to access the ChangeTask Context
+  const { updateTaskTitle, updateTaskDescription, updateTaskDueDate } =
+    useChangeTask(); // Custom hook to access the ChangeTask Context
 
-  const [editTaskTitle, setEditTaskTitle] = useState(todo.taskTitle); // useState hook for the task's title
+  const [editTaskTitle, setEditTaskTitle] = useState(todo.taskTitle); // useState hook for editing the task's title
   const [editTaskDescription, setEditTaskDescription] = useState(
     todo.description
-  );
+  ); // useState hook for editing the task's description
+  const [editTaskDueDate, setEditTaskDueDate] = useState(todo.dueDate); // useState hook for editing the task's due date
 
   // Function for opening the todo's modal
   function openModal() {
     setIsModalOpen(true);
     setEditTaskTitle(todoTask.taskTitle);
     setEditTaskDescription(todoTask.description);
+    setEditTaskDueDate(parse(todoTask.dueDate, "PP", new Date()));
     setIsEditEnabled(false);
   }
 
@@ -59,6 +63,7 @@ function TodoTask({ todo }) {
     setIsModalOpen(false);
     setEditTaskTitle(todoTask.taskTitle);
     setEditTaskDescription(todoTask.description);
+    setEditTaskDueDate(parse(todoTask.dueDate, "PP", new Date()));
   }
 
   // Function for handling the update button click in the modal
@@ -68,10 +73,13 @@ function TodoTask({ todo }) {
       ...todo,
       taskTitle: editTaskTitle,
       description: editTaskDescription,
+      dueDate:
+        editTaskDueDate === undefined ? "" : format(editTaskDueDate, "PP"),
     });
     // console.log(editTaskTitle);
     updateTaskTitle(todo.id, editTaskTitle);
     updateTaskDescription(todo.id, editTaskDescription);
+    updateTaskDueDate(todo.id, editTaskDueDate);
     if (isEditEnabled) {
       setIsEditEnabled(false);
     }
@@ -107,6 +115,7 @@ function TodoTask({ todo }) {
       >
         {todoTask.description}
       </p>
+      <p>{todoTask.dueDate}</p>
       {isModalOpen && ( // Conditional rendering for the modal being open
         <TodoModal
           isComplete={isComplete}
@@ -117,6 +126,8 @@ function TodoTask({ todo }) {
           setEditTaskTitle={setEditTaskTitle}
           editTaskDescription={editTaskDescription}
           setEditTaskDescription={setEditTaskDescription}
+          editTaskDueDate={editTaskDueDate}
+          setEditTaskDueDate={setEditTaskDueDate}
           handleUpdateClick={handleUpdateClick}
           setIsEditEnabled={setIsEditEnabled}
           todoTask={todoTask}

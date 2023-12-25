@@ -1,24 +1,21 @@
 import React, { useState } from "react";
-import {
-  useChangeTask,
-  useTaskDescription,
-  useTaskTitle,
-} from "../context/TaskContext";
+import { useChangeTask, useTask } from "../context/TaskContext";
 import { AiFillPlusCircle } from "react-icons/ai";
+import TaskCalendarPicker from "./todoTaskComponents/TaskCalendarPicker";
 
 /**
  * Input component that creates a todo when the user enters a todo title
  */
 export default function CreateTaskInput() {
-  const { taskTitle, setTaskTitle } = useTaskTitle(); // Custom hook that returns the task and setTask function from the taskTitle Context
-  const { taskDescription, setTaskDescription } = useTaskDescription(); // Custom hook that returns the task and setTask function from the taskTitle Context
-  const [isAddEditable, setIsAddEditable] = useState(false);
+  const { taskTitle, setTaskTitle, taskDescription, setTaskDescription } =
+    useTask(); // Custom hook that returns the state hooks from the task Context
+  const [isAddEditable, setIsAddEditable] = useState(false); // State hook that determines if the inputs for adding the task are displayed
 
   return (
     <div className="w-2/3 h-full flex justify-center items-start">
       {isAddEditable ? (
         <div className="w-full h-full relative flex flex-col items-end">
-          <div className="flex flex-col w-full h-1/3 p-2 border rounded-lg mb-4">
+          <div className="flex flex-col w-full h-2/3 p-2 border rounded-lg mb-4">
             <input
               value={taskTitle}
               onChange={(e) => {
@@ -35,6 +32,7 @@ export default function CreateTaskInput() {
               className="text-white w-full bg-transparent text-md border-none rounded-lg focus:outline-none"
               placeholder="Description"
             />
+            <TaskCalendarPicker />
           </div>
           <div>
             <button
@@ -68,7 +66,7 @@ export default function CreateTaskInput() {
  * Button is functional only if the task is not empty.
  */
 function AddTaskButton({ setIsAddEditable }) {
-  const { taskTitle } = useTaskTitle();
+  const { taskTitle } = useTask();
   const { addTask } = useChangeTask();
   return (
     <button

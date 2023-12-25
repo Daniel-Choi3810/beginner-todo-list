@@ -1,4 +1,4 @@
-import { useChangeTask } from "../../../context/TaskContext";
+import { useChangeTask } from "../../context/TaskContext";
 
 /**
  * Button component for updating a todo task
