@@ -14,6 +14,16 @@ export default function TaskCalendarPicker() {
   }
   return (
     <DayPicker
+      fromYear={new Date().getFullYear()}
+      disabled={(date) => {
+        const today = new Date();
+        const startOfDay = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+        return date < startOfDay;
+      }}
       mode="single"
       selected={taskDueDate}
       onSelect={setTaskDueDate}

@@ -71,8 +71,6 @@ export default function TodoModal({
                   }}
                 >
                   <h2 className="text-2xl font-bold ">{todoTask.taskTitle}</h2>
-                  <h2 className="text-2xl font-bold ">{todoTask.dueDate}</h2>
-
                   <div className="flex items-center text-gray-400">
                     {todoTask.description === "" && <AiOutlineMenu />}
                     <h3
@@ -124,8 +122,25 @@ function EditTaskInput({
   setEditTaskDueDate,
   handleUpdateClick,
 }) {
+  const css = `
+  .my-selected:not([disabled]) { 
+    font-weight: bold; 
+    border: 2px solid currentColor;
+  }
+  .my-selected:hover:not([disabled]) { 
+    border-color: white;
+    color: black;
+  }
+  .my-today { 
+    font-weight: bold;
+    font-size: 140%; 
+    color: white;
+  }
+`;
   return (
     <div className="flex flex-col items-start w-full">
+      <style>{css}</style>
+
       <div className="flex flex-col w-[90%] p-2 border rounded-lg">
         <input
           value={editTaskTitle}
@@ -162,10 +177,23 @@ function EditTaskInput({
         </button>
       </div>
       <DayPicker
+        fromYear={new Date().getFullYear()}
+        disabled={(date) => {
+          const today = new Date();
+          const startOfDay = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate()
+          );
+          return date < startOfDay;
+        }}
+        modifiersClassNames={{
+          selected: "my-selected",
+          today: "my-today",
+        }}
         mode="single"
         selected={editTaskDueDate}
         onSelect={setEditTaskDueDate}
-        // footer={footer}
       />
     </div>
   );
