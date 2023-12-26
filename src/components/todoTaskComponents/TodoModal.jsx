@@ -1,24 +1,41 @@
 import { UpdateTaskButton } from "./TaskButtons";
 import TodoCheckBox from "./TodoCheckBox";
+
 import { AiOutlineMenu } from "react-icons/ai";
 import { DayPicker } from "react-day-picker";
 import { parse } from "date-fns";
+import { useState } from "react";
+import { useChangeTask } from "../../context/TaskContext";
 
 export default function TodoModal({
   closeModal,
-  isEditEnabled,
   editTaskTitle,
   setEditTaskTitle,
+  isEditEnabled,
+  setIsEditEnabled,
   editTaskDescription,
   setEditTaskDescription,
   editTaskDueDate,
   setEditTaskDueDate,
-  handleUpdateClick,
-  setIsEditEnabled,
-  todoTask,
+  todo,
   isComplete,
   setIsComplete,
 }) {
+  const { updateTaskTitle, updateTaskDescription, updateTaskDueDate } =
+    useChangeTask(); // Custom hook to access the ChangeTask Context
+
+  // Function for handling the update button click in the modal
+  function handleUpdateClick(e) {
+    e.stopPropagation();
+    // console.log(editTaskTitle);
+    updateTaskTitle(todo.id, editTaskTitle);
+    updateTaskDescription(todo.id, editTaskDescription);
+    updateTaskDueDate(todo.id, editTaskDueDate);
+    if (isEditEnabled) {
+      setIsEditEnabled(false);
+    }
+  }
+
   return (
     <div
       onClick={closeModal}
@@ -31,7 +48,7 @@ export default function TodoModal({
         className="flex flex-col bg-slate-700 rounded-lg h-[95%] md:max-w-[850px] w-[95%] shadow-lg relative"
       >
         <div className="h-[50px] w-full border-b border-slate-500 flex justify-between items-center px-2">
-          <p className="ml-2 italic">Added on {todoTask.currDate}</p>
+          <p className="ml-2 italic">Added on {todo.currDate}</p>
           <button className="m-2" onClick={closeModal}>
             X
           </button>
@@ -43,14 +60,14 @@ export default function TodoModal({
                 style="checkbox checkbox-success mt-4 mx-4 h-5 w-5 rounded-full"
                 isComplete={isComplete}
                 setIsComplete={setIsComplete}
-                id={todoTask.id}
+                id={todo.id}
               />
               {isEditEnabled ? ( // Conditional rendering for the task title being editable
                 <div>
                   <EditTaskInput
-                    initialTaskTitle={todoTask.taskTitle}
-                    initialDescription={todoTask.description}
-                    initialDueDate={parse(todoTask.dueDate, "PP", new Date())}
+                    initialTaskTitle={todo.taskTitle}
+                    initialDescription={todo.description}
+                    initialDueDate={parse(todo.dueDate, "PP", new Date())}
                     disableEdit={() => {
                       setIsEditEnabled(false);
                     }}
@@ -70,15 +87,13 @@ export default function TodoModal({
                     setIsEditEnabled(true);
                   }}
                 >
-                  <h2 className="text-2xl font-bold ">{todoTask.taskTitle}</h2>
+                  <h2 className="text-2xl font-bold ">{todo.taskTitle}</h2>
                   <div className="flex items-center text-gray-400">
-                    {todoTask.description === "" && <AiOutlineMenu />}
-                    <h3
-                      className={`${todoTask.description === "" ? "ml-2" : ""}`}
-                    >
-                      {todoTask.description === ""
+                    {todo.description === "" && <AiOutlineMenu />}
+                    <h3 className={`${todo.description === "" ? "ml-2" : ""}`}>
+                      {todo.description === ""
                         ? "Description"
-                        : todoTask.description}
+                        : todo.description}
                     </h3>
                   </div>
                 </div>
@@ -87,7 +102,7 @@ export default function TodoModal({
           </div>
           <div className="bg-gray-600 flex flex-col items-center w-full pt-4 px-3 rounded-br-lg">
             <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
-              <button className="py-2">Due date: {todoTask.dueDate}</button>
+              <button className="py-2">Due date: {todo.dueDate}</button>
             </div>
             <div className="w-[90%] border-b border-slate-500 hover:bg-slate-500 flex transition-colors">
               <button className="py-2">Priority</button>
