@@ -12,7 +12,7 @@ import TaskCalendarPicker from './components/todoTaskComponents/TaskCalendarPick
 function App() {
   return (
     <TaskProvider>
-      <div className="flex flex-col items-center text-center h-screen">
+      <div className="flex flex-col items-center text-center">
         <Header />
         <TodoDisplay />
         <CreateTaskInput />

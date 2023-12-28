@@ -12,7 +12,7 @@ export default function CreateTaskInput() {
   const [isAddEditable, setIsAddEditable] = useState(false); // State hook that determines if the inputs for adding the task are displayed
 
   return (
-    <div className="w-2/3 h-full flex justify-center items-start">
+    <div className="w-2/3 h-full flex justify-center items-start mb-12">
       {isAddEditable ? (
         <div className="w-full h-full relative flex flex-col items-end">
           <div className="flex flex-col w-full h-2/3 p-2 border rounded-lg mb-4">
