@@ -1,18 +1,76 @@
-import React, { useState } from "react";
-import { useChangeTask, useTodos } from "../context/TaskContext";
+import React, { useMemo, useState } from "react";
+import { useTodos } from "../context/TaskContext";
 import { DeleteTaskButton } from "./todoTaskComponents/TaskButtons";
 import TodoModal from "./todoTaskComponents/TodoModal";
 import TodoCheckBox from "./todoTaskComponents/TodoCheckBox";
-import { format, parse } from "date-fns";
+import { parse } from "date-fns";
 
 /**
  * Renders a flexbox container for displaying todo tasks.
  */
 export default function TodoFlexBox() {
   const { todos } = useTodos();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterProperty, setFilterProperty] = useState(null);
+
+  const filteredTodos = useMemo(() => {
+    let filtered = todos;
+
+    switch (filterProperty) {
+      case "Completed":
+        filtered = filtered.filter((todo) => todo.status);
+        break;
+      case "Non-completed":
+        filtered = filtered.filter((todo) => !todo.status);
+        break;
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (todo) =>
+          todo.taskTitle.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+          todo.description.toLowerCase().startsWith(searchQuery.toLowerCase())
+      );
+    }
+
+    return filtered;
+  }, [todos, filterProperty, searchQuery]);
+
+  const sortedTodos = useMemo(() => {
+    if (filterProperty === "Due Date") {
+      return filteredTodos.sort(
+        (a, b) =>
+          parse(a.dueDate, "PP", new Date()) -
+          parse(b.dueDate, "PP", new Date())
+      );
+    }
+
+    return filteredTodos;
+  }, [filteredTodos, filterProperty]);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full">
-      {todos.map((todo) => (
+    <div className="flex flex-col items-center justify-center w-full space-y-8">
+      <input
+        className="px-4 py-1 rounded-full bg-slate-800"
+        type="text"
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+        }}
+        value={searchQuery}
+        placeholder="Search for Task"
+      />
+      <select
+        onChange={(e) => {
+          setFilterProperty(e.target.value);
+        }}
+        className="select select-error px-20 max-w-xs"
+      >
+        <option selected>None</option>
+        <option>Completed</option>
+        <option>Non-completed</option>
+        <option>Due Date</option>
+      </select>
+      {sortedTodos.map((todo) => (
         <TodoTask key={todo.id} todo={todo} />
       ))}
     </div>
