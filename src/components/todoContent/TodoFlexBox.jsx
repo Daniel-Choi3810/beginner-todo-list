@@ -3,6 +3,7 @@ import {
   useChangeTask,
   useTodos,
   useUpdateTaskStatus,
+  useFilter,
 } from "../../context/TaskContext";
 import {
   DeleteTaskButton,
@@ -14,9 +15,20 @@ import {
  */
 export default function TodoFlexBox() {
   const { todos } = useTodos();
+  const { filter } = useFilter();
+
+  const filteredTodos = todos.filter((todo) => {
+    if (filter === "active") {
+      return !todo.status;
+    } else if (filter === "completed") {
+      return todo.status;
+    }
+    return true;
+  });
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      {todos.map((todo) => (
+      {filteredTodos.map((todo) => (
         <TodoTask key={todo.id} todo={todo} />
       ))}
     </div>

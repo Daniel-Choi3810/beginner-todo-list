@@ -13,6 +13,7 @@ const TaskTitleContext = createContext(null); // Context created for the created
 const ChangeTaskContext = createContext(null); // Context created for the add, delete, and update tasks
 const UpdateTaskStatusContext = createContext(null); // Context created for the update task completion status
 const TodoListDispatchContext = createContext(null); // Context created for the dispatch method used with useReducer.
+const FilterContext = createContext(null); // Context for controlling task filter
 
 // Action types for useReducer to handle different actions
 const ACTIONS = {
@@ -70,6 +71,8 @@ export function TaskProvider({ children }) {
     });
   }
 
+  const [filter, setFilter] = useState("all");
+
   return (
     <TodoListDispatchContext.Provider value={dispatch}>
       <TodoContext.Provider value={{ todos }}>
@@ -78,7 +81,9 @@ export function TaskProvider({ children }) {
             <ChangeTaskContext.Provider
               value={{ addTask, deleteTask, updateTaskTitle }}
             >
-              {children}
+              <FilterContext.Provider value={{ filter, setFilter }}>
+                {children}
+              </FilterContext.Provider>
             </ChangeTaskContext.Provider>
           </UpdateTaskStatusContext.Provider>
         </TaskTitleContext.Provider>
@@ -109,6 +114,11 @@ export function useChangeTask() {
 // Custom hook to return the UpdateTaskStatusContext
 export function useUpdateTaskStatus() {
   return useContext(UpdateTaskStatusContext);
+}
+
+// Custom hook to access the current filter
+export function useFilter() {
+  return useContext(FilterContext);
 }
 
 // Variable to get the initial todos state from localStorage
