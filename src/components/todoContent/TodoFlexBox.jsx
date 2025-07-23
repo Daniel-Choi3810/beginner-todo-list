@@ -88,6 +88,9 @@ function TodoTask({ todo }) {
       >
         {todoTask.title}
       </p>
+      {todoTask.dueDate && (
+        <p className="text-xs text-gray-300">Due: {todoTask.dueDate}</p>
+      )}
       {isModalOpen && ( // Conditional rendering for the modal being open
         <TodoModal
           closeModal={closeModal}
@@ -192,6 +195,9 @@ function TodoModal({
             }}
           >
             <h2 className="text-lg font-bold mb-2">{todoTask.title}</h2>
+            {todoTask.dueDate && (
+              <p className="text-sm text-gray-600">Due: {todoTask.dueDate}</p>
+            )}
           </div>
         )}
         <button onClick={closeModal}>Exit</button>
